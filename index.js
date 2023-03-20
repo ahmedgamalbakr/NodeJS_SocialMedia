@@ -1,6 +1,7 @@
 const express=require('express');
 const app=express();
-const userRoutes= require('./routes/usersRoute')
+const userRoutes = require('./routes/usersRoute')
+const postRoutes = require("./routes/postsRoute")
 app.use(express.json());
 require('./db')
 const port=3000;
@@ -10,9 +11,7 @@ const port=3000;
 
 
 app.use('/users',userRoutes)
- 
-
-
+app.use('/posts',postRoutes);
 
 app.listen(port,()=>{
     console.log("server is running in port  " + port);

@@ -1,5 +1,6 @@
 const jwt=require('jsonwebtoken');
 const User = require('../models/user');
+const { jwtSecret } = require("../config")
 
 module.exports=async(req,res,next)=>{
  
@@ -12,7 +13,7 @@ module.exports=async(req,res,next)=>{
     }
     
     //  verify the token
-    const {id}=jwt.verify(token,"secretKey");
+    const { id } = jwt.verify(token, jwtSecret);
     
     const user= await User.findById(id);
     if(!user){
