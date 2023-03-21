@@ -8,6 +8,8 @@ const CustomError = require("../helpers/customError");
 const {promisify} = require('util');
 const signJwt = promisify(jwt.sign);
 const {jwtSecret} = require("../config");
+const Post = require("../models/post");
+
 // SignUp users
 router.post("/", validateSignUp, async (req, res, next) => {
   try {
@@ -40,7 +42,6 @@ router.post("/login", validateLogin, async (req, res, next) => {
     if (!isMatch) {
       throw new CustomError("invalid credentials", 400);
     }
-    // console.log("done check");
     const payload = { id: user._id };
     const token = await signJwt(payload, jwtSecret, { expiresIn: "1h" });
     console.log("after token");
@@ -54,12 +55,25 @@ router.post("/login", validateLogin, async (req, res, next) => {
   }
 });
 
+
+//get user with his posts 
+router.get('/',verify,async(req,res,next)=>{
+   
+  // console.log(req.user._id);
+   const userPosts=await Post.find({user:req.user._id});
+   res.send(userPosts);
+
+})
+
+
 //update
-router.patch("/:id", verify, async (req, res, next) => {
-  await User.findByIdAndUpdate(req.params.id, req.body);
+router.patch("/", verify, async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user._id, req.body);
   console.log("update success");
 });
 
+
+//Admin only has authority to delete users or creators
 router.delete("/:id", verify, async (req, res, next) => {
   //check if role == admin
   if (req.user.role === "admin") {

@@ -22,4 +22,21 @@ router.get("/", verify, async (req, res, next) => {
 })
 
 
+//update Post
+router.patch("/:postid", verify, async (req, res, next) => {
+    await Post.findByIdAndUpdate(req.params.postid, req.body);
+    console.log("update success");
+  });
+  
+
+  //delete Post
+  router.delete("/:postid", verify, async (req, res, next) => {
+
+    await Post.findByIdAndDelete(req.params.postid);
+      console.log("delete succcess");
+    
+  });
+  
+
+
 module.exports = router
