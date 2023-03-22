@@ -5,9 +5,9 @@ const jwt = require("jsonwebtoken");
 const { validateSignUp, validateLogin } = require("../middleware/validator");
 const verify = require("../middleware/verify");
 const CustomError = require("../helpers/customError");
-const {promisify} = require('util');
+const { promisify } = require("util");
 const signJwt = promisify(jwt.sign);
-const {jwtSecret} = require("../config");
+const { jwtSecret } = require("../config");
 const Post = require("../models/post");
 
 // SignUp users
@@ -51,20 +51,20 @@ router.post("/login", validateLogin, async (req, res, next) => {
       user,
     });
   } catch (error) {
-    return next(error)
+    return next(error);
   }
 });
 
-
-//get user with his posts 
-router.get('/',verify,async(req,res,next)=>{
-   
+//get user with his posts
+router.get("/", verify, async (req, res, next) => {
   // console.log(req.user._id);
-   const userPosts=await Post.find({user:req.user._id});
-   res.send(userPosts);
-
-})
-
+  const userPosts = await Post.find({ user: req.user._id });
+  if (userPosts.length == 0) {
+    res.send("no posts found");
+  } else {
+    res.send(userPosts);
+  }
+});
 
 //update
 router.patch("/", verify, async (req, res, next) => {
@@ -72,16 +72,20 @@ router.patch("/", verify, async (req, res, next) => {
   console.log("update success");
 });
 
-
 //Admin only has authority to delete users or creators
 router.delete("/:id", verify, async (req, res, next) => {
   //check if role == admin
   if (req.user.role === "admin") {
-    await User.findByIdAndDelete(req.params.id);
-    console.log("delete succcess");
+    const found = User.findById(req.params.id);
+    if (!found) {
+      res.send("no user was found with this id");
+    } else {
+      await User.findByIdAndDelete(req.params.id);
+      console.log("delete succcess");
+    }
   } else {
     console.log("Only admin has the permissin to delete ");
-    res.send("Only admin has the permissin to delete ")
+    res.send("Only admin has the permissin to delete ");
   }
 });
 
