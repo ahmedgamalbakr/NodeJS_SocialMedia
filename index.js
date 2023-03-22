@@ -3,7 +3,7 @@ const app=express();
 const userRoutes = require('./routes/usersRoute')
 const postRoutes = require("./routes/postsRoute")
 const commentRoute = require("./routes/commentRoute")
-
+const reviewRoute = require("./routes/reviewsRoute")
 app.use(express.json());
 require('./db')
 const port=3000;
@@ -11,10 +11,10 @@ const port=3000;
 
 
 
-
 app.use('/users',userRoutes)
 app.use('/posts',postRoutes);
 app.use('/comments',commentRoute);
+app.use('/reviews',reviewRoute);
 
 
 app.listen(port,()=>{
