@@ -19,22 +19,37 @@ router.post("/:postid", verify, async (req, res, next) => {
   }
 });
 
-//get comments related to specific post
-// router.get("/:postid", verify, async (req, res, next) => {
-//     const comments = await Comment.find({ post: req.params.postid })
-//     res.send(comments)
-// })
+// get comment
+router.get("/:commentid", verify, async (req, res, next) => {
+  const isFound = await Comment.findById(req.params.commentid);
+  if (!isFound) {
+    res.send("comment not found");
+  } else {
+    const comment = await Comment.find({ post: req.params.commentid });
+    res.send(comment);
+  }
+});
 
 //update Comment
 router.patch("/:commentid", verify, async (req, res, next) => {
-  await Comment.findByIdAndUpdate(req.params.commentid, req.body);
-  console.log("update success");
+  const isFound = await Comment.findById(req.params.commentid);
+  if (!isFound) {
+    res.send("comment not found");
+  } else {
+    await Comment.findByIdAndUpdate(req.params.commentid, req.body);
+    console.log("update success");
+  }
 });
 
 //delete comment
 router.delete("/:commentid", verify, async (req, res, next) => {
-  await Comment.findByIdAndDelete(req.params.commentid);
-  console.log("delete succcess");
+  const isFound = await Comment.findById(req.params.commentid);
+  if (!isFound) {
+    res.send("comment not found");
+  } else {
+    await Comment.findByIdAndDelete(req.params.commentid);
+    console.log("delete succcess");
+  }
 });
 
 module.exports = router;

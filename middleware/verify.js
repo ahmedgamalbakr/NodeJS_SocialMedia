@@ -21,7 +21,7 @@ module.exports=async(req,res,next)=>{
         error.status=403;
         return next(error);
     }
-    console.log(user);
+    // console.log(user);
     req.user=user;
     next();
     }

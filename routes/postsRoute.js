@@ -19,27 +19,48 @@ router.post("/", verify, async (req, res, next) => {
 });
 
 router.get("/", verify, async (req, res, next) => {
-    const posts = await Post.find({ user: req.user._id })
-  res.send(posts);
+  const posts = await Post.find({ user: req.user._id });
+  if (posts.length == 0) {
+    console.log("no posts found");
+  } else {
+    res.send(posts);
+  }
 });
-// get post comments and reviews 
+// get post comments and reviews
 router.get("/:postid", verify, async (req, res, next) => {
+  const isFound = await Post.findById(req.params.postid);
+  if (!isFound) {
+    res.send("post not found");
+  } else {
     const comments = await Comment.find({ post: req.params.postid });
     const reviews = await Review.find({ post: req.params.postid });
     // const b = "Comments [" + comments+"]"+"\nReviews [" + reviews+"]"
     // console.log(b)
-  res.send("Comments \n [" + comments + "]" + "\n Reviews \n [" + reviews + "]");
+    res.send(
+      "Comments \n [" + comments + "]" + "\n Reviews \n [" + reviews + "]"
+    );
+  }
 });
 //update Post
 router.patch("/:postid", verify, async (req, res, next) => {
-  await Post.findByIdAndUpdate(req.params.postid, req.body);
-  console.log("update success");
+  const isFound = await Post.findById(req.params.postid);
+  if (!isFound) {
+    res.send("post not found");
+  } else {
+    await Post.findByIdAndUpdate(req.params.postid, req.body);
+    console.log("update success");
+  }
 });
 
 //delete Post
 router.delete("/:postid", verify, async (req, res, next) => {
-  await Post.findByIdAndDelete(req.params.postid);
-  console.log("delete succcess");
+  const isFound = await Post.findById(req.params.postid);
+  if (!isFound) {
+    res.send("post not found");
+  } else {
+    await Post.findByIdAndDelete(req.params.postid);
+    console.log("delete succcess");
+  }
 });
 
 module.exports = router;

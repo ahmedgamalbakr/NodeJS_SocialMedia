@@ -81,6 +81,7 @@ router.delete("/:id", verify, async (req, res, next) => {
     console.log("delete succcess");
   } else {
     console.log("Only admin has the permissin to delete ");
+    res.send("Only admin has the permissin to delete ")
   }
 });
 
