@@ -9,7 +9,7 @@ const { promisify } = require("util");
 const signJwt = promisify(jwt.sign);
 const { jwtSecret } = require("../config");
 const Post = require("../models/post");
-
+const upload = require("../middleware/upload");
 // SignUp users
 router.post("/", validateSignUp, async (req, res, next) => {
   try {
@@ -68,8 +68,12 @@ router.get("/", verify, async (req, res, next) => {
 
 //update
 router.patch("/", verify, async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user._id, req.body);
-  console.log("update success");
+  if (Object.keys(req.body).length === 0) {
+    await res.send("body is empty");
+  } else {
+    await User.findByIdAndUpdate(req.user._id, req.body);
+    res.send("update success");
+  }
 });
 
 //Admin only has authority to delete users or creators
@@ -88,5 +92,23 @@ router.delete("/:id", verify, async (req, res, next) => {
     res.send("Only admin has the permissin to delete ");
   }
 });
+
+
+router.post(
+  "/uploadImg",
+  verify,
+  upload,
+  async (req, res, next) => {
+    try {
+      var id = req.user._id.toHexString();
+      var img = req.file.filename;
+      var data = { img };
+      await User.updateOne({ _id: id }, data);
+      res.send("uploded succesfully ! ");
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 module.exports = router;

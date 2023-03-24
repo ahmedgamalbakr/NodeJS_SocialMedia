@@ -18,6 +18,9 @@ const userSchema = new Schema(
     password: {
       type: String,
     },
+    img: {
+      type:Buffer,
+    }
   },
   {
     toJSON: {
