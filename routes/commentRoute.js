@@ -2,7 +2,11 @@ const express = require("express");
 const router = express.Router();
 const verify = require("../middleware/verify");
 const Comment = require("../models/comment");
-const {isUser, isAdmin} = require("../middleware/roleValidation")
+const {
+  isUser,
+  isAdmin,
+  isAdminOrUser,
+} = require("../middleware/roleValidation");
 // add comment to post
 router.post("/:postid", verify,isUser, async (req, res, next) => {
   try {
@@ -42,13 +46,13 @@ router.patch("/:commentid", verify, isUser, async (req, res, next) => {
 });
 
 //delete comment
-router.delete("/:commentid", verify,isAdmin, async (req, res, next) => {
+router.delete("/:commentid", verify, isAdminOrUser, async (req, res, next) => {
   const isFound = await Comment.findById(req.params.commentid);
   if (!isFound) {
     res.send("comment not found");
   } else {
     await Comment.findByIdAndDelete(req.params.commentid);
-    console.log("delete succcess");
+    res.send("delete success");
   }
 });
 

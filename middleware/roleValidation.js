@@ -35,7 +35,21 @@ const isUser = async (req, res, next) => {
   const { id, role } = jwt.verify(token, jwtSecret);
   //  verify role
   const user = await User.findById(id);
-  if (user.role != "creator") {
+  if (user.role != "user") {
+    const error = new Error("unauthorized user");
+    error.status = 403;
+    return next(error);
+  }
+  console.log(user.role);
+  req.user = user;
+  next();
+};
+const isAdminOrUser = async (req, res, next) => {
+  const token = req.headers.authorization;
+  const { id, role } = jwt.verify(token, jwtSecret);
+  //  verify role
+  const user = await User.findById(id);
+  if (user.role != "user" && user.role != "admin") {
     const error = new Error("unauthorized user");
     error.status = 403;
     return next(error);
@@ -46,5 +60,8 @@ const isUser = async (req, res, next) => {
 };
 
 module.exports = {
-  isAdmin,isCreator,isUser
+  isAdmin,
+  isCreator,
+  isUser,
+  isAdminOrUser,
 };

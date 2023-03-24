@@ -3,7 +3,11 @@ const router = express.Router();
 const verify = require("../middleware/verify");
 const Review = require("../models/review");
 const Post = require("../models/post");
-const { isUser, isAdmin } = require("../middleware/roleValidation");
+const {
+  isUser,
+  isAdmin,
+  isAdminOrUser,
+} = require("../middleware/roleValidation");
 
 // add review
 router.post("/:postid", verify, isUser, async (req, res, next) => {
@@ -48,7 +52,7 @@ router.patch("/:reviewid", verify, isUser, async (req, res, next) => {
   }
 });
 // delete review
-router.delete("/:reviewid", verify,isAdmin, async (req, res, next) => {
+router.delete("/:reviewid", verify, isAdminOrUser, async (req, res, next) => {
   const review = await Review.findById(req.params.reviewid);
   if (!review) {
     res.send("Review not found");

@@ -76,22 +76,6 @@ router.patch("/", verify, async (req, res, next) => {
   }
 });
 
-//Admin only has authority to delete users or creators
-// router.delete("/:id", verify, async (req, res, next) => {
-//   //check if role == admin
-//   if (req.user.role === "admin") {
-//     const found = User.findById(req.params.id);
-//     if (!found) {
-//       res.send("no user was found with this id");
-//     } else {
-//       await User.findByIdAndDelete(req.params.id);
-//       console.log("delete succcess");
-//     }
-//   } else {
-//     console.log("Only admin has the permissin to delete ");
-//     res.send("Only admin has the permissin to delete ");
-//   }
-// });
 router.delete("/:id", verify, isAdmin, async (req, res, next) => {
   const found = await User.findByIdAndDelete(req.params.id);
   // console.log(found);
