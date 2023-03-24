@@ -26,7 +26,6 @@ const validateSignUp= (req,res,next)=>{
 const loginSchema=Joi.object(
     {
         username: Joi.string().min(3).max(20).required(),
-        role:Joi.string().required(),
         password: Joi.string().min(3).max(20).required()
     }
 )

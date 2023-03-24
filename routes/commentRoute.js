@@ -7,6 +7,8 @@ const {
   isAdmin,
   isAdminOrUser,
 } = require("../middleware/roleValidation");
+
+
 // add comment to post
 router.post("/:postid", verify,isUser, async (req, res, next) => {
   try {

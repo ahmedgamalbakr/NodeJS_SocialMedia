@@ -5,6 +5,8 @@ const verify = require("../middleware/verify");
 const Comment = require("../models/comment");
 const Review = require("../models/review");
 const {isCreator,isAdmin} = require("../middleware/roleValidation")
+
+
 router.post("/",isCreator, verify, async (req, res, next) => {
   try {
     console.log(req.user._id);
@@ -26,6 +28,7 @@ router.get("/", verify,isCreator, async (req, res, next) => {
     res.send(posts);
   }
 });
+
 // get post comments and reviews
 router.get("/:postid",isCreator, verify, async (req, res, next) => {
   const isFound = await Post.findById(req.params.postid);
@@ -34,8 +37,7 @@ router.get("/:postid",isCreator, verify, async (req, res, next) => {
   } else {
     const comments = await Comment.find({ post: req.params.postid });
     const reviews = await Review.find({ post: req.params.postid });
-    // const b = "Comments [" + comments+"]"+"\nReviews [" + reviews+"]"
-    // console.log(b)
+    
     res.send(
       "Comments \n [" + comments + "]" + "\n Reviews \n [" + reviews + "]"
     );

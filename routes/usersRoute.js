@@ -11,6 +11,8 @@ const { jwtSecret } = require("../config");
 const Post = require("../models/post");
 const upload = require("../middleware/upload");
 const { isAdmin } = require("../middleware/roleValidation");
+
+
 // SignUp users
 router.post("/", validateSignUp, async (req, res, next) => {
   try {
@@ -55,14 +57,14 @@ router.post("/login", validateLogin, async (req, res, next) => {
   }
 });
 
-//get user with his posts
+
 router.get("/", verify, async (req, res, next) => {
   // console.log(req.user._id);
-  const userPosts = await Post.find({ user: req.user._id });
-  if (userPosts.length == 0) {
+  const posts = await Post.find({ user: req.user._id });
+  if (posts.length == 0) {
     res.send("no posts found");
   } else {
-    res.send(userPosts);
+    res.send(posts);
   }
 });
 
@@ -76,6 +78,7 @@ router.patch("/", verify, async (req, res, next) => {
   }
 });
 
+// If U are admin U can use delete 
 router.delete("/:id", verify, isAdmin, async (req, res, next) => {
   const found = await User.findByIdAndDelete(req.params.id);
   // console.log(found);

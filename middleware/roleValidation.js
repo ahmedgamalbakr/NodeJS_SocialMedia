@@ -30,6 +30,8 @@ const isCreator = async (req, res, next) => {
   req.user = user;
   next();
 };
+
+
 const isUser = async (req, res, next) => {
   const token = req.headers.authorization;
   const { id, role } = jwt.verify(token, jwtSecret);
@@ -44,6 +46,8 @@ const isUser = async (req, res, next) => {
   req.user = user;
   next();
 };
+
+
 const isAdminOrUser = async (req, res, next) => {
   const token = req.headers.authorization;
   const { id, role } = jwt.verify(token, jwtSecret);
