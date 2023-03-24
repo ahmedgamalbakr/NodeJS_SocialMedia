@@ -3,16 +3,16 @@ const router = express.Router();
 const verify = require("../middleware/verify");
 const Review = require("../models/review");
 const Post = require("../models/post");
+const { isUser, isAdmin } = require("../middleware/roleValidation");
 
 // add review
-router.post("/:postid", verify, async (req, res, next) => {
+router.post("/:postid", verify, isUser, async (req, res, next) => {
   try {
     const isFound = await Post.findById(req.params.postid);
     // console.log(isFound);
     if (!isFound) {
       res.send("post not found");
-    }
-    else {
+    } else {
       console.log(req.user._id);
       const review = await Review.create({
         content: req.body.content,
@@ -27,7 +27,7 @@ router.post("/:postid", verify, async (req, res, next) => {
   }
 });
 // get specific review
-router.get("/:reviewid", verify, async (req, res, next) => {
+router.get("/:reviewid", verify, isUser, async (req, res, next) => {
   const review = await Review.findById(req.params.reviewid);
   // console.log(review);
   if (!review) {
@@ -38,7 +38,7 @@ router.get("/:reviewid", verify, async (req, res, next) => {
 });
 
 // update review
-router.patch("/:reviewid", verify, async (req, res, next) => {
+router.patch("/:reviewid", verify, isUser, async (req, res, next) => {
   const review = await Review.findById(req.params.reviewid);
   if (!review) {
     res.send("Review not found");
@@ -48,7 +48,7 @@ router.patch("/:reviewid", verify, async (req, res, next) => {
   }
 });
 // delete review
-router.delete("/:reviewid", verify, async (req, res, next) => {
+router.delete("/:reviewid", verify,isAdmin, async (req, res, next) => {
   const review = await Review.findById(req.params.reviewid);
   if (!review) {
     res.send("Review not found");

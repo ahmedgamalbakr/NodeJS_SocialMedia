@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const verify = require("../middleware/verify");
 const Comment = require("../models/comment");
-
+const {isUser, isAdmin} = require("../middleware/roleValidation")
 // add comment to post
-router.post("/:postid", verify, async (req, res, next) => {
+router.post("/:postid", verify,isUser, async (req, res, next) => {
   try {
     console.log(req.user._id);
     console.log(req.params.postid);
@@ -20,7 +20,7 @@ router.post("/:postid", verify, async (req, res, next) => {
 });
 
 // get comment
-router.get("/:commentid", verify, async (req, res, next) => {
+router.get("/:commentid", verify, isUser, async (req, res, next) => {
   const isFound = await Comment.findById(req.params.commentid);
   if (!isFound) {
     res.send("comment not found");
@@ -31,7 +31,7 @@ router.get("/:commentid", verify, async (req, res, next) => {
 });
 
 //update Comment
-router.patch("/:commentid", verify, async (req, res, next) => {
+router.patch("/:commentid", verify, isUser, async (req, res, next) => {
   const isFound = await Comment.findById(req.params.commentid);
   if (!isFound) {
     res.send("comment not found");
@@ -42,7 +42,7 @@ router.patch("/:commentid", verify, async (req, res, next) => {
 });
 
 //delete comment
-router.delete("/:commentid", verify, async (req, res, next) => {
+router.delete("/:commentid", verify,isAdmin, async (req, res, next) => {
   const isFound = await Comment.findById(req.params.commentid);
   if (!isFound) {
     res.send("comment not found");

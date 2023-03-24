@@ -4,9 +4,9 @@ const userRoutes = require('./routes/usersRoute')
 const postRoutes = require("./routes/postsRoute")
 const commentRoute = require("./routes/commentRoute")
 const reviewRoute = require("./routes/reviewsRoute")
+const {port} = require("./config.js")
 app.use(express.json());
 require('./db')
-const port=3000;
 
 
 
@@ -18,7 +18,7 @@ app.use('/reviews',reviewRoute);
 
 
 app.listen(port,()=>{
-    console.log("server is running in port  " + port);
+    console.log("server is running on port  " + port);
 
 });
 

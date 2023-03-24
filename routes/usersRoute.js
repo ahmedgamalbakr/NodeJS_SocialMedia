@@ -10,6 +10,7 @@ const signJwt = promisify(jwt.sign);
 const { jwtSecret } = require("../config");
 const Post = require("../models/post");
 const upload = require("../middleware/upload");
+const { isAdmin } = require("../middleware/roleValidation");
 // SignUp users
 router.post("/", validateSignUp, async (req, res, next) => {
   try {
@@ -44,7 +45,6 @@ router.post("/login", validateLogin, async (req, res, next) => {
     }
     const payload = { id: user._id };
     const token = await signJwt(payload, jwtSecret, { expiresIn: "1h" });
-    console.log("after token");
     res.json({
       message: "logged in",
       token,
@@ -77,38 +77,42 @@ router.patch("/", verify, async (req, res, next) => {
 });
 
 //Admin only has authority to delete users or creators
-router.delete("/:id", verify, async (req, res, next) => {
-  //check if role == admin
-  if (req.user.role === "admin") {
-    const found = User.findById(req.params.id);
-    if (!found) {
-      res.send("no user was found with this id");
-    } else {
-      await User.findByIdAndDelete(req.params.id);
-      console.log("delete succcess");
-    }
+// router.delete("/:id", verify, async (req, res, next) => {
+//   //check if role == admin
+//   if (req.user.role === "admin") {
+//     const found = User.findById(req.params.id);
+//     if (!found) {
+//       res.send("no user was found with this id");
+//     } else {
+//       await User.findByIdAndDelete(req.params.id);
+//       console.log("delete succcess");
+//     }
+//   } else {
+//     console.log("Only admin has the permissin to delete ");
+//     res.send("Only admin has the permissin to delete ");
+//   }
+// });
+router.delete("/:id", verify, isAdmin, async (req, res, next) => {
+  const found = await User.findByIdAndDelete(req.params.id);
+  // console.log(found);
+  if (!found) {
+    res.send("no user was found with this id");
   } else {
-    console.log("Only admin has the permissin to delete ");
-    res.send("Only admin has the permissin to delete ");
+    console.log("delete succcess");
+    res.send("delete succcess");
   }
 });
 
-
-router.post(
-  "/uploadImg",
-  verify,
-  upload,
-  async (req, res, next) => {
-    try {
-      var id = req.user._id.toHexString();
-      var img = req.file.filename;
-      var data = { img };
-      await User.updateOne({ _id: id }, data);
-      res.send("uploded succesfully ! ");
-    } catch (err) {
-      next(err);
-    }
+router.post("/uploadImg", verify, upload, async (req, res, next) => {
+  try {
+    var id = req.user._id.toHexString();
+    var img = req.file.filename;
+    var data = { img };
+    await User.updateOne({ _id: id }, data);
+    res.send("uploded succesfully ! ");
+  } catch (err) {
+    next(err);
   }
-);
+});
 
 module.exports = router;

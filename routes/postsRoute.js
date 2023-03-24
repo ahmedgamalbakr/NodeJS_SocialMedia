@@ -4,8 +4,8 @@ const router = express.Router();
 const verify = require("../middleware/verify");
 const Comment = require("../models/comment");
 const Review = require("../models/review");
-
-router.post("/", verify, async (req, res, next) => {
+const {isCreator,isAdmin} = require("../middleware/roleValidation")
+router.post("/",isCreator, verify, async (req, res, next) => {
   try {
     console.log(req.user._id);
     const post = await Post.create({
@@ -18,7 +18,7 @@ router.post("/", verify, async (req, res, next) => {
   }
 });
 
-router.get("/", verify, async (req, res, next) => {
+router.get("/", verify,isCreator, async (req, res, next) => {
   const posts = await Post.find({ user: req.user._id });
   if (posts.length == 0) {
     console.log("no posts found");
@@ -27,7 +27,7 @@ router.get("/", verify, async (req, res, next) => {
   }
 });
 // get post comments and reviews
-router.get("/:postid", verify, async (req, res, next) => {
+router.get("/:postid",isCreator, verify, async (req, res, next) => {
   const isFound = await Post.findById(req.params.postid);
   if (!isFound) {
     res.send("post not found");
@@ -42,7 +42,7 @@ router.get("/:postid", verify, async (req, res, next) => {
   }
 });
 //update Post
-router.patch("/:postid", verify, async (req, res, next) => {
+router.patch("/:postid",isCreator, verify, async (req, res, next) => {
   const isFound = await Post.findById(req.params.postid);
   if (!isFound) {
     res.send("post not found");
@@ -53,7 +53,7 @@ router.patch("/:postid", verify, async (req, res, next) => {
 });
 
 //delete Post
-router.delete("/:postid", verify, async (req, res, next) => {
+router.delete("/:postid",isAdmin, verify, async (req, res, next) => {
   const isFound = await Post.findById(req.params.postid);
   if (!isFound) {
     res.send("post not found");
